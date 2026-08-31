@@ -38,12 +38,14 @@ p { text-wrap: pretty; }
 .site-nav { margin-left: auto; display: flex; align-items: center; gap: 28px; }
 .site-nav a { font-size: 14.5px; font-weight: 500; color: var(--muted); padding: 6px 0; border-bottom: 2px solid transparent; }
 .site-nav a:hover { color: var(--text); }
-/* Step 814: .site-nav a's own color (a class + an element, 2 selector
-   components) beat .btn-primary's color (1 class, 1 component) no matter
-   what .btn-primary said -- the nav CTA rendered in --muted gray, not
-   white, regardless of the fix Step 813 made to .btn-primary itself. A
-   real specificity fight, not a wrong color value. */
-.site-nav .btn-primary { color: #fff; }
+/* Step 814/815: .site-nav a's own color/padding (a class + an element, 2
+   selector components) beat .btn-primary/.btn-sm's own (1 class, 1
+   component) no matter what those said -- the nav CTA rendered in
+   --muted gray with zero side padding regardless of what Step 813 set
+   on .btn-primary/.btn-sm directly. Real specificity fights, not wrong
+   values -- the same real bug in two different properties. */
+.site-nav .btn-primary { color: #fff; padding-left: 5px; padding-right: 5px; }
+.site-nav .btn-primary:hover { background: #fff; border-color: var(--border); color: var(--text); }
 .site-nav a.is-active { background: var(--accent); color: #fff; padding: 6px 16px; border-radius: 999px; border-bottom-color: transparent; }
 .nav-toggle { display: none; margin-left: auto; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 9px; font: inherit; font-size: 14px; padding: 9px 14px; cursor: pointer; }
 
@@ -55,10 +57,12 @@ p { text-wrap: pretty; }
 .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
 .btn-sm { font-size: 14.5px; font-weight: 600; padding: 10px 24px; }
 
-/* media frames -- every slot always installs a real image/video, so this
-   is a plain, clean 1px border matching the corners, not a placeholder
-   texture (the old repeating diagonal-stripe pattern read as a heavy,
-   "bolded" border once a real photo filled the frame). */
+/* media frames -- a clean 1px border matching the corners always, plus a
+   real placeholder look (diagonal lines, a real width x height label)
+   for an image frame that genuinely has no photo installed yet -- Step
+   815 restored this, scoped with :has() so it only ever shows for a
+   real, empty src="", never layered underneath an actually-installed
+   photo the way the old, unconditional version was. */
 .frame { position: relative; border-radius: 16px; border: 1px solid var(--border); background: var(--card); overflow: hidden; display: grid; place-items: center; }
 .frame > * { position: relative; }
 /* Step 814: with real width/height now set on every <img> (so a real
@@ -66,10 +70,23 @@ p { text-wrap: pretty; }
    (the base template, before any manifest installs) makes the browser
    draw its own broken-image icon inside that reserved box -- exactly
    what read as a "bolded border." Hiding the element when there's no
-   real image lets the frame's own plain, thin border stand as the
-   deliberate placeholder, with nothing broken-looking inside it. */
+   real image lets the frame's own plain, thin border stand underneath
+   the placeholder treatment below, with nothing broken-looking in it. */
 .frame img:not([src]), .frame img[src=""] { display: none; }
 .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.frame.hero-image:has(img[src=""]), .frame.about-image:has(img[src=""]) {
+  background-image: repeating-linear-gradient(135deg, var(--border) 0 1px, transparent 1px 11px);
+}
+.frame.hero-image:has(img[src=""])::after, .frame.about-image:has(img[src=""])::after {
+  content: attr(data-w) " × " attr(data-h);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 7px;
+}
 .frame .tag { background: var(--card); border: 1px solid var(--border); padding: 8px 14px; border-radius: 7px; }
 
 /* hero */
@@ -258,7 +275,7 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
       </div>
     </div>
     <div class="hero-media">
-      <div class="frame hero-image"><!-- @content-slot key="hero_image" type="image" width=1200 height=600 --><img src="" alt="" width="1200" height="600"></div>
+      <div class="frame hero-image" data-w="1200" data-h="600"><!-- @content-slot key="hero_image" type="image" width=1200 height=600 --><img src="" alt="" width="1200" height="600"></div>
       <div class="hero-card">
         <!-- @content-slot key="hero_badge_title" type="title" max_length=32 -->
         <span class="hero-card-title">Today: 8am – 6pm</span>
@@ -288,7 +305,7 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
 
 <section id="about">
   <div class="bay">
-    <div class="frame about-image"><!-- @content-slot key="about_image" type="image" width=900 height=1120 --><img src="" alt="" width="900" height="1120"></div>
+    <div class="frame about-image" data-w="900" data-h="1120"><!-- @content-slot key="about_image" type="image" width=900 height=1120 --><img src="" alt="" width="900" height="1120"></div>
     <div>
       <div class="eyebrow">About</div>
       <!-- @content-slot key="about_heading" type="title" max_length=60 -->
