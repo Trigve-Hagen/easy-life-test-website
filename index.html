@@ -600,11 +600,24 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
     var open = nav.classList.toggle('is-open');
     toggle.setAttribute('aria-expanded', String(open));
   });
-  nav.addEventListener('click', function (e) {
-    if (e.target.tagName === 'A') { nav.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); }
-  });
 
   var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+  // Step 817: clicking a link used to rely entirely on the native anchor
+  // jump eventually firing a scroll event that spy() would notice --
+  // real, but indirect, and reported as "the active style does not move
+  // to the new link" when clicked. Now the clicked link is marked active
+  // immediately, the moment it's clicked, not just once scrolling
+  // settles. e.target.closest('a[...]') also fixes a second real bug:
+  // "Book a visit" wraps its own text in an inner <span> (needed so the
+  // real content marker has something to target), so a click landing on
+  // that span had e.target.tagName === 'span', not 'a' -- the old check
+  // silently never matched a click on that button at all.
+  nav.addEventListener('click', function (e) {
+    var link = e.target.closest('a[href^="#"]');
+    if (link) links.forEach(function (a) { a.classList.toggle('is-active', a === link); });
+    if (e.target.closest('a')) { nav.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); }
+  });
+
   function spy() {
     var current = null;
     links.forEach(function (a) {
