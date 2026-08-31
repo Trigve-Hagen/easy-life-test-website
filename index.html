@@ -38,6 +38,12 @@ p { text-wrap: pretty; }
 .site-nav { margin-left: auto; display: flex; align-items: center; gap: 28px; }
 .site-nav a { font-size: 14.5px; font-weight: 500; color: var(--muted); padding: 6px 0; border-bottom: 2px solid transparent; }
 .site-nav a:hover { color: var(--text); }
+/* Step 814: .site-nav a's own color (a class + an element, 2 selector
+   components) beat .btn-primary's color (1 class, 1 component) no matter
+   what .btn-primary said -- the nav CTA rendered in --muted gray, not
+   white, regardless of the fix Step 813 made to .btn-primary itself. A
+   real specificity fight, not a wrong color value. */
+.site-nav .btn-primary { color: #fff; }
 .site-nav a.is-active { background: var(--accent); color: #fff; padding: 6px 16px; border-radius: 999px; border-bottom-color: transparent; }
 .nav-toggle { display: none; margin-left: auto; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 9px; font: inherit; font-size: 14px; padding: 9px 14px; cursor: pointer; }
 
@@ -55,6 +61,14 @@ p { text-wrap: pretty; }
    "bolded" border once a real photo filled the frame). */
 .frame { position: relative; border-radius: 16px; border: 1px solid var(--border); background: var(--card); overflow: hidden; display: grid; place-items: center; }
 .frame > * { position: relative; }
+/* Step 814: with real width/height now set on every <img> (so a real
+   install never shifts layout as its photo loads), a still-empty src=""
+   (the base template, before any manifest installs) makes the browser
+   draw its own broken-image icon inside that reserved box -- exactly
+   what read as a "bolded border." Hiding the element when there's no
+   real image lets the frame's own plain, thin border stand as the
+   deliberate placeholder, with nothing broken-looking inside it. */
+.frame img:not([src]), .frame img[src=""] { display: none; }
 .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .frame .tag { background: var(--card); border: 1px solid var(--border); padding: 8px 14px; border-radius: 7px; }
 
@@ -71,7 +85,7 @@ p { text-wrap: pretty; }
 .hero-media { position: relative; }
 .hero-image { aspect-ratio: 2 / 1; box-shadow: 0 30px 60px -40px var(--text); }
 .hero-card { position: absolute; left: -24px; bottom: -30px; background: var(--card); border: 1px solid var(--border); border-radius: 13px; padding: 16px 20px; box-shadow: 0 20px 40px -28px var(--text); max-width: 235px; }
-.hero-card-title { display: block; font-size: 13px; margin-bottom: 3px; }
+.hero-card-title { display: block; font-weight: 700; font-size: 13px; margin-bottom: 3px; }
 .hero-card span { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
 
 /* bands */
