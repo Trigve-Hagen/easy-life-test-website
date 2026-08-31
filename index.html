@@ -53,6 +53,7 @@ p { text-wrap: pretty; }
 .frame { position: relative; border-radius: 16px; border: 1px solid var(--border); background: var(--card); overflow: hidden; display: grid; place-items: center; }
 .frame::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, var(--border) 0 1px, transparent 1px 11px); opacity: 0.5; }
 .frame > * { position: relative; }
+.frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .frame .tag { background: var(--card); border: 1px solid var(--border); padding: 8px 14px; border-radius: 7px; }
 
 /* hero */
@@ -68,7 +69,7 @@ p { text-wrap: pretty; }
 .hero-media { position: relative; }
 .hero-image { aspect-ratio: 2 / 1; box-shadow: 0 30px 60px -40px var(--text); }
 .hero-card { position: absolute; left: -24px; bottom: -30px; background: var(--card); border: 1px solid var(--border); border-radius: 13px; padding: 16px 20px; box-shadow: 0 20px 40px -28px var(--text); max-width: 235px; }
-.hero-card b { display: block; font-size: 13px; margin-bottom: 3px; }
+.hero-card-title { display: block; font-size: 13px; margin-bottom: 3px; }
 .hero-card span { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
 
 /* bands */
@@ -116,8 +117,8 @@ p { text-wrap: pretty; }
 .quotes h2 { font-size: 32px; text-align: center; margin-bottom: 44px; }
 figure.quote { margin: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 15px; padding: 28px; }
 .stars { color: var(--accent); letter-spacing: 0.18em; font-size: 13px; margin-bottom: 14px; }
-figure.quote blockquote { margin: 0 0 20px; font-size: 16px; line-height: 1.55; }
-figure.quote figcaption { font-size: 13.5px; color: var(--muted); }
+figure.quote .quote-text { margin: 0 0 20px; font-size: 16px; line-height: 1.55; }
+figure.quote .quote-by { font-size: 13.5px; color: var(--muted); }
 
 /* pricing */
 #pricing .bay { padding: 96px 32px; }
@@ -130,7 +131,7 @@ figure.quote figcaption { font-size: 13.5px; color: var(--muted); }
 .tier-badge { position: absolute; top: -12px; left: 32px; background: var(--accent); color: var(--card); font-size: 11.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; }
 .tier-name { font-size: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
 .tier-price { display: flex; align-items: baseline; gap: 6px; margin-bottom: 22px; }
-.tier-price b { font-size: 40px; font-weight: 780; letter-spacing: -0.03em; }
+.tier-price .tier-price-value { font-size: 40px; font-weight: 780; letter-spacing: -0.03em; }
 .tier-price span { font-size: 14.5px; color: var(--muted); }
 .tier-lines { display: grid; gap: 11px; font-size: 15px; color: var(--muted); margin-bottom: 28px; }
 .tier .btn { display: block; text-align: center; padding: 13px; font-size: 15px; }
@@ -200,8 +201,7 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
       <a href="#services">Services</a>
       <a href="#features">In action</a>
       <a href="#pricing">Pricing</a>
-      <!-- @content-slot key="nav_cta" type="title" max_length=20 -->
-      <a class="btn btn-primary btn-sm" href="#contact">Book a visit</a>
+      <a class="btn btn-primary btn-sm" href="#contact"><!-- @content-slot key="nav_cta" type="title" max_length=20 --><span>Book a visit</span></a>
     </nav>
   </div>
 </header>
@@ -218,10 +218,8 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
       <!-- @content-slot key="hero_tagline" type="body" max_length=150 -->
       <p class="tagline">This is placeholder text that shows what a real headline and tagline look like in this layout, before any customization is installed.</p>
       <div class="cta-row">
-        <!-- @content-slot key="hero_primary_cta" type="title" max_length=24 -->
-        <a class="btn btn-primary" href="#contact">Get started</a>
-        <!-- @content-slot key="hero_secondary_cta" type="title" max_length=24 -->
-        <a class="btn btn-ghost" href="#services">See what we do</a>
+        <a class="btn btn-primary" href="#contact"><!-- @content-slot key="hero_primary_cta" type="title" max_length=24 --><span>Get started</span></a>
+        <a class="btn btn-ghost" href="#services"><!-- @content-slot key="hero_secondary_cta" type="title" max_length=24 --><span>See what we do</span></a>
       </div>
       <div class="stats">
         <div>
@@ -245,11 +243,10 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
       </div>
     </div>
     <div class="hero-media">
-      <!-- @content-slot key="hero_image" type="image" width=1200 height=600 -->
-      <div class="frame hero-image"><span class="mono tag">hero_image — 1200×600</span></div>
+      <div class="frame hero-image"><!-- @content-slot key="hero_image" type="image" width=1200 height=600 --><img src="" alt=""></div>
       <div class="hero-card">
         <!-- @content-slot key="hero_badge_title" type="title" max_length=32 -->
-        <b>Today: 8am – 6pm</b>
+        <span class="hero-card-title">Today: 8am – 6pm</span>
         <!-- @content-slot key="hero_badge_body" type="body" max_length=90 -->
         <span>Walk-ins welcome. Same-day answers on every request.</span>
       </div>
@@ -276,8 +273,7 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
 
 <section id="about">
   <div class="bay">
-    <!-- @content-slot key="about_image" type="image" width=900 height=1120 -->
-    <div class="frame about-image"><span class="mono tag">about_image — 900×1120</span></div>
+    <div class="frame about-image"><!-- @content-slot key="about_image" type="image" width=900 height=1120 --><img src="" alt=""></div>
     <div>
       <div class="eyebrow">About</div>
       <!-- @content-slot key="about_heading" type="title" max_length=60 -->
@@ -346,8 +342,7 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
 
 <section id="features">
   <div class="bay">
-    <!-- @content-slot key="feature_video" type="video" max_seconds=60 -->
-    <div class="frame video-frame"><span class="play"><b>▶</b><span class="mono">feature_video — max 60s</span></span></div>
+    <div class="frame video-frame"><!-- @content-slot key="feature_video" type="video" max_seconds=60 --><video controls></video></div>
     <div>
       <div class="eyebrow">See it in action</div>
       <!-- @content-slot key="video_heading" type="title" max_length=60 -->
@@ -371,23 +366,23 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
       <figure class="quote">
         <div class="stars">★★★★★</div>
         <!-- @content-slot key="quote_1" type="body" max_length=220 -->
-        <blockquote>“They quoted a price, kept it, and finished a day early. I have already sent two neighbors their way.”</blockquote>
+        <p class="quote-text">“They quoted a price, kept it, and finished a day early. I have already sent two neighbors their way.”</p>
         <!-- @content-slot key="quote_1_by" type="title" max_length=40 -->
-        <figcaption>Dana R. — regular since 2021</figcaption>
+        <span class="quote-by">Dana R. — regular since 2021</span>
       </figure>
       <figure class="quote">
         <div class="stars">★★★★★</div>
         <!-- @content-slot key="quote_2" type="body" max_length=220 -->
-        <blockquote>“Every question got a straight answer the same day. That is rarer than it should be.”</blockquote>
+        <p class="quote-text">“Every question got a straight answer the same day. That is rarer than it should be.”</p>
         <!-- @content-slot key="quote_2_by" type="title" max_length=40 -->
-        <figcaption>Marcus O. — first-time client</figcaption>
+        <span class="quote-by">Marcus O. — first-time client</span>
       </figure>
       <figure class="quote">
         <div class="stars">★★★★★</div>
         <!-- @content-slot key="quote_3" type="body" max_length=220 -->
-        <blockquote>“Small enough to know my name, organized enough to never drop a detail.”</blockquote>
+        <p class="quote-text">“Small enough to know my name, organized enough to never drop a detail.”</p>
         <!-- @content-slot key="quote_3_by" type="title" max_length=40 -->
-        <figcaption>Priya S. — three years running</figcaption>
+        <span class="quote-by">Priya S. — three years running</span>
       </figure>
     </div>
   </div>
@@ -408,7 +403,7 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
         <div class="tier-name">Drop in</div>
         <div class="tier-price">
           <!-- @content-slot key="tier_1_price" type="title" max_length=10 -->
-          <b>$28</b>
+          <span class="tier-price-value">$28</span>
           <!-- @content-slot key="tier_1_unit" type="title" max_length=14 -->
           <span>/ visit</span>
         </div>
@@ -428,7 +423,7 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
         <div class="tier-name">Monthly</div>
         <div class="tier-price">
           <!-- @content-slot key="tier_2_price" type="title" max_length=10 -->
-          <b>$149</b>
+          <span class="tier-price-value">$149</span>
           <!-- @content-slot key="tier_2_unit" type="title" max_length=14 -->
           <span>/ month</span>
         </div>
@@ -447,7 +442,7 @@ form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center;
         <div class="tier-name">Dedicated</div>
         <div class="tier-price">
           <!-- @content-slot key="tier_3_price" type="title" max_length=10 -->
-          <b>$390</b>
+          <span class="tier-price-value">$390</span>
           <!-- @content-slot key="tier_3_unit" type="title" max_length=14 -->
           <span>/ month</span>
         </div>
