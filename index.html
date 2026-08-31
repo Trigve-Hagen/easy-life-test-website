@@ -5,80 +5,568 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Test Site — Easy Life Content Installer demo</title>
 <style>
-  :root {
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --border: #cbd5e1;
-    --text: #0f172a;
-    --muted: #475569;
-    --accent: #0284c7;
-    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; }
-  .bay { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
-  nav { position: sticky; top: 0; background: rgba(255,255,255,0.95); border-bottom: 1px solid var(--border); padding: 1rem 0; z-index: 10; }
-  nav .bay { display: flex; justify-content: space-between; align-items: center; }
-  nav .brand { font-weight: 800; }
-  nav a { color: var(--muted); text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; }
-  nav a:hover { color: var(--accent); }
-  section { padding: 3.5rem 0; }
-  section#hero { text-align: center; padding-top: 4.5rem; }
-  h1 { font-size: 2.2rem; margin: 0 0 0.75rem; }
-  .tagline { font-size: 1.1rem; color: var(--muted); max-width: 560px; margin: 0 auto 2rem; }
-  .hero-image { width: 100%; max-width: 700px; border-radius: 8px; display: block; margin: 0 auto; background: var(--border); }
-  h2 { font-size: 1.5rem; margin: 0 0 1rem; }
-  .about-paragraph { color: var(--muted); max-width: 640px; }
-  .feature-video { width: 100%; max-width: 640px; border-radius: 8px; background: #0f172a; display: block; }
-  footer { border-top: 1px solid var(--border); padding: 2rem 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --border: #cbd5e1;
+  --text: #0f172a;
+  --muted: #475569;
+  --accent: #0284c7;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--text); }
+img, video { max-width: 100%; display: block; }
+.bay { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+.eyebrow { font-size: 12.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+h1, h2, h3 { letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
+h1 { font-size: 56px; line-height: 1.06; font-weight: 800; margin-bottom: 20px; }
+h2 { font-size: 38px; line-height: 1.12; font-weight: 750; }
+h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.015em; }
+p { text-wrap: pretty; }
+
+/* header */
+.site-head { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+.site-head .bay { height: 76px; display: flex; align-items: center; gap: 32px; }
+.brand { display: flex; align-items: center; gap: 12px; color: var(--text); }
+.brand-mark { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); color: var(--card); display: grid; place-items: center; font-weight: 800; font-size: 16px; }
+.brand-name { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+.site-nav { margin-left: auto; display: flex; align-items: center; gap: 28px; }
+.site-nav a { font-size: 14.5px; font-weight: 500; color: var(--muted); padding: 6px 0; border-bottom: 2px solid transparent; }
+.site-nav a:hover { color: var(--text); }
+.site-nav a.is-active { color: var(--text); border-bottom-color: var(--accent); }
+.nav-toggle { display: none; margin-left: auto; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 9px; font: inherit; font-size: 14px; padding: 9px 14px; cursor: pointer; }
+
+/* buttons */
+.btn { display: inline-block; font-weight: 650; font-size: 15.5px; padding: 15px 28px; border-radius: 10px; border: 1px solid transparent; }
+.btn-primary { background: var(--accent); color: var(--card); box-shadow: 0 8px 22px -12px var(--accent); }
+.btn-primary:hover { color: var(--card); filter: brightness(1.08); }
+.btn-ghost { background: var(--card); color: var(--text); border-color: var(--border); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+.btn-sm { font-size: 14.5px; font-weight: 600; padding: 10px 18px; }
+
+/* placeholders (replaced by installed media) */
+.frame { position: relative; border-radius: 16px; border: 1px solid var(--border); background: var(--card); overflow: hidden; display: grid; place-items: center; }
+.frame::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, var(--border) 0 1px, transparent 1px 11px); opacity: 0.5; }
+.frame > * { position: relative; }
+.frame .tag { background: var(--card); border: 1px solid var(--border); padding: 8px 14px; border-radius: 7px; }
+
+/* hero */
+#hero { padding: 84px 0 72px; }
+#hero .bay { display: grid; grid-template-columns: 1.05fr 1fr; gap: 64px; align-items: center; }
+.pill { display: inline-flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--border); background: var(--card); padding: 7px 14px; border-radius: 999px; margin-bottom: 26px; }
+.pill i { width: 6px; height: 6px; border-radius: 999px; background: var(--accent); }
+.tagline { font-size: 19px; color: var(--muted); margin: 0 0 34px; max-width: 46ch; }
+.cta-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 44px; }
+.stats { display: grid; grid-template-columns: repeat(3, auto); gap: 36px; justify-content: start; border-top: 1px solid var(--border); padding-top: 26px; }
+.stat-value { font-size: 27px; font-weight: 750; letter-spacing: -0.02em; }
+.stat-label { font-size: 13px; color: var(--muted); }
+.hero-media { position: relative; }
+.hero-image { aspect-ratio: 2 / 1; box-shadow: 0 30px 60px -40px var(--text); }
+.hero-card { position: absolute; left: -24px; bottom: -30px; background: var(--card); border: 1px solid var(--border); border-radius: 13px; padding: 16px 20px; box-shadow: 0 20px 40px -28px var(--text); max-width: 235px; }
+.hero-card b { display: block; font-size: 13px; margin-bottom: 3px; }
+.hero-card span { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+/* bands */
+.band { background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.trust .bay { padding: 22px 32px; display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
+.trust-label { font-size: 12px; letter-spacing: 0.11em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.trust-marks { display: flex; gap: 34px; flex-wrap: wrap; align-items: center; opacity: 0.62; }
+.trust-marks span { font-weight: 700; font-size: 15px; letter-spacing: 0.04em; }
+
+/* about */
+#about .bay { padding: 96px 32px; display: grid; grid-template-columns: 1fr 1.1fr; gap: 72px; align-items: center; }
+.about-image { aspect-ratio: 4 / 5; }
+.about-paragraph { font-size: 17px; color: var(--muted); margin: 20px 0 30px; max-width: 58ch; }
+.points { display: grid; gap: 14px; }
+.points div { display: flex; gap: 13px; align-items: flex-start; font-size: 15.5px; }
+.points i { flex: none; width: 21px; height: 21px; margin-top: 2px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); display: grid; place-items: center; font-size: 12px; font-weight: 800; font-style: normal; }
+
+/* services */
+#services .bay { padding: 92px 32px; }
+.sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-bottom: 48px; flex-wrap: wrap; }
+.sec-head h2 { max-width: 24ch; }
+.link-arrow { font-size: 15px; font-weight: 600; border-bottom: 1px solid var(--accent); padding-bottom: 2px; }
+.cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.card { background: var(--bg); border: 1px solid var(--border); border-radius: 15px; padding: 30px; }
+.card:hover { border-color: var(--accent); }
+.card-icon { width: 40px; height: 40px; border-radius: 11px; background: color-mix(in srgb, var(--accent) 14%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent); margin-bottom: 22px; }
+.card p { font-size: 15px; color: var(--muted); margin: 10px 0 20px; }
+.card-meta { font-size: 13px; font-weight: 600; color: var(--muted); }
+
+/* video feature */
+#features .bay { padding: 96px 32px; display: grid; grid-template-columns: 1.25fr 1fr; gap: 64px; align-items: center; }
+.video-frame { aspect-ratio: 16 / 10; background: var(--text); box-shadow: 0 30px 60px -40px var(--text); }
+.video-frame::before { background: repeating-linear-gradient(135deg, var(--muted) 0 1px, transparent 1px 13px); opacity: 0.35; }
+.video-frame .play { display: grid; gap: 16px; justify-items: center; }
+.video-frame .play b { width: 62px; height: 62px; border-radius: 999px; background: var(--accent); color: var(--card); display: grid; place-items: center; font-size: 20px; padding-left: 4px; }
+.video-frame .play span { color: var(--bg); }
+.feature-video { width: 100%; aspect-ratio: 16 / 10; border-radius: 16px; background: var(--text); border: 1px solid var(--border); }
+#features h2 { font-size: 34px; line-height: 1.14; }
+#features .lede { font-size: 16.5px; color: var(--muted); margin: 18px 0 28px; }
+.steps { display: grid; gap: 12px; border-left: 2px solid var(--border); padding-left: 20px; font-size: 15px; color: var(--muted); }
+.steps strong { color: var(--text); margin-right: 8px; }
+
+/* testimonials */
+.quotes .bay { padding: 84px 32px; }
+.quotes h2 { font-size: 32px; text-align: center; margin-bottom: 44px; }
+figure.quote { margin: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 15px; padding: 28px; }
+.stars { color: var(--accent); letter-spacing: 0.18em; font-size: 13px; margin-bottom: 14px; }
+figure.quote blockquote { margin: 0 0 20px; font-size: 16px; line-height: 1.55; }
+figure.quote figcaption { font-size: 13.5px; color: var(--muted); }
+
+/* pricing */
+#pricing .bay { padding: 96px 32px; }
+.pricing-head { text-align: center; margin-bottom: 48px; }
+.pricing-head h2 { max-width: 20ch; margin: 0 auto 14px; }
+.pricing-head p { font-size: 17px; color: var(--muted); margin: 0 auto; max-width: 52ch; }
+.tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
+.tier { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; position: relative; }
+.tier.is-featured { border: 1.5px solid var(--accent); box-shadow: 0 26px 50px -34px var(--accent); }
+.tier-badge { position: absolute; top: -12px; left: 32px; background: var(--accent); color: var(--card); font-size: 11.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; }
+.tier-name { font-size: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.tier-price { display: flex; align-items: baseline; gap: 6px; margin-bottom: 22px; }
+.tier-price b { font-size: 40px; font-weight: 780; letter-spacing: -0.03em; }
+.tier-price span { font-size: 14.5px; color: var(--muted); }
+.tier-lines { display: grid; gap: 11px; font-size: 15px; color: var(--muted); margin-bottom: 28px; }
+.tier .btn { display: block; text-align: center; padding: 13px; font-size: 15px; }
+
+/* contact */
+#contact { background: var(--card); border-top: 1px solid var(--border); }
+#contact .bay { padding: 88px 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+#contact h2 { max-width: 20ch; }
+#contact .lede { font-size: 17px; color: var(--muted); margin: 18px 0 30px; max-width: 46ch; }
+.contact-rows { display: grid; gap: 18px; font-size: 15.5px; }
+.contact-rows div { display: flex; gap: 12px; }
+.contact-rows b { color: var(--muted); font-weight: 400; width: 74px; flex: none; }
+form.enquiry { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 30px; display: grid; gap: 16px; }
+form.enquiry label { display: grid; gap: 7px; font-size: 13.5px; font-weight: 600; color: var(--muted); }
+form.enquiry input, form.enquiry textarea { font: inherit; font-size: 15px; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; outline: none; }
+form.enquiry textarea { resize: vertical; }
+form.enquiry input:focus, form.enquiry textarea:focus { border-color: var(--accent); }
+form.enquiry button { font: inherit; font-size: 15.5px; font-weight: 650; background: var(--accent); color: var(--card); border: none; border-radius: 10px; padding: 14px; cursor: pointer; }
+form.enquiry button:hover { filter: brightness(1.08); }
+form.enquiry .fine { font-size: 12.5px; color: var(--muted); text-align: center; }
+
+/* footer */
+.site-foot { border-top: 1px solid var(--border); background: var(--bg); }
+.foot-cols { max-width: 1180px; margin: 0 auto; padding: 56px 32px 30px; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 44px; }
+.foot-cols p { font-size: 14.5px; color: var(--muted); margin: 0; max-width: 34ch; }
+.foot-col { display: grid; gap: 10px; align-content: start; font-size: 14.5px; }
+.foot-col span, .foot-col a { color: var(--muted); }
+.foot-col a:hover { color: var(--accent); }
+.foot-title { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 650; margin-bottom: 4px; }
+.foot-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.foot-brand .brand-mark { width: 30px; height: 30px; border-radius: 8px; font-size: 14px; }
+.foot-legal { max-width: 1180px; margin: 0 auto; padding: 20px 32px 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.skip { position: absolute; left: -9999px; top: 0; padding: 10px 16px; background: var(--card); border: 1px solid var(--border); z-index: 100; }
+.skip:focus { left: 12px; top: 12px; }
+
+@media (max-width: 900px) {
+  h1 { font-size: 40px; }
+  h2 { font-size: 30px; }
+  .bay { padding: 0 22px; }
+  .nav-toggle { display: block; }
+  .site-nav { position: absolute; left: 0; right: 0; top: 76px; display: none; flex-direction: column; align-items: stretch; gap: 4px; background: var(--card); border-bottom: 1px solid var(--border); padding: 14px 22px 20px; }
+  .site-nav.is-open { display: flex; }
+  .site-nav a { padding: 10px 0; border-bottom: none; }
+  #hero .bay, #about .bay, #features .bay, #contact .bay { grid-template-columns: 1fr; gap: 44px; padding-left: 22px; padding-right: 22px; }
+  #hero { padding: 52px 0 60px; }
+  #about .bay, #services .bay, #features .bay, #pricing .bay, .quotes .bay, #contact .bay { padding-top: 64px; padding-bottom: 64px; }
+  .hero-card { position: static; margin-top: 22px; max-width: none; }
+  .cards-3, .tiers, .foot-cols { grid-template-columns: 1fr; }
+  .stats { gap: 24px; }
+}
 </style>
 </head>
 <body>
+<a class="skip" href="#hero">Skip to content</a>
 
-<nav>
+<header class="site-head">
   <div class="bay">
-    <span class="brand">Test Site</span>
-    <div>
+    <a class="brand" href="#hero">
+      <!-- @content-slot key="brand_mark" type="title" max_length=3 -->
+      <span class="brand-mark">TS</span>
+      <!-- @content-slot key="brand_name" type="title" max_length=28 -->
+      <span class="brand-name">Test Site</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="site-nav" id="site-nav">
       <a href="#about">About</a>
-      <a href="#features">Features</a>
-    </div>
+      <a href="#services">Services</a>
+      <a href="#features">In action</a>
+      <a href="#pricing">Pricing</a>
+      <!-- @content-slot key="nav_cta" type="title" max_length=20 -->
+      <a class="btn btn-primary btn-sm" href="#contact">Book a visit</a>
+    </nav>
   </div>
-</nav>
+</header>
 
 <section id="hero">
   <div class="bay">
-    <!-- @content-slot key="hero_headline" type="title" max_length=60 -->
-    <h1>A Real Business, Ready For Your Words</h1>
-
-    <!-- @content-slot key="hero_tagline" type="body" max_length=150 -->
-    <p class="tagline">This is placeholder text that shows what a real headline and tagline look like in this layout, before any customization is installed.</p>
-
-    <!-- @content-slot key="hero_image" type="image" width=1200 height=600 -->
-    <img class="hero-image" src="https://placehold.co/1200x600?text=Hero+Image" alt="Placeholder hero image">
+    <div>
+      <p class="pill"><i></i>
+        <!-- @content-slot key="hero_eyebrow" type="title" max_length=40 -->
+        <span>Open for new clients</span>
+      </p>
+      <!-- @content-slot key="hero_headline" type="title" max_length=60 -->
+      <h1>A Real Business, Ready For Your Words</h1>
+      <!-- @content-slot key="hero_tagline" type="body" max_length=150 -->
+      <p class="tagline">This is placeholder text that shows what a real headline and tagline look like in this layout, before any customization is installed.</p>
+      <div class="cta-row">
+        <!-- @content-slot key="hero_primary_cta" type="title" max_length=24 -->
+        <a class="btn btn-primary" href="#contact">Get started</a>
+        <!-- @content-slot key="hero_secondary_cta" type="title" max_length=24 -->
+        <a class="btn btn-ghost" href="#services">See what we do</a>
+      </div>
+      <div class="stats">
+        <div>
+          <!-- @content-slot key="stat_1_value" type="title" max_length=10 -->
+          <div class="stat-value">12 yrs</div>
+          <!-- @content-slot key="stat_1_label" type="title" max_length=26 -->
+          <div class="stat-label">In the neighborhood</div>
+        </div>
+        <div>
+          <!-- @content-slot key="stat_2_value" type="title" max_length=10 -->
+          <div class="stat-value">2,400+</div>
+          <!-- @content-slot key="stat_2_label" type="title" max_length=26 -->
+          <div class="stat-label">People served</div>
+        </div>
+        <div>
+          <!-- @content-slot key="stat_3_value" type="title" max_length=10 -->
+          <div class="stat-value">4.9 / 5</div>
+          <!-- @content-slot key="stat_3_label" type="title" max_length=26 -->
+          <div class="stat-label">Average review</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-media">
+      <!-- @content-slot key="hero_image" type="image" width=1200 height=600 -->
+      <div class="frame hero-image"><span class="mono tag">hero_image — 1200×600</span></div>
+      <div class="hero-card">
+        <!-- @content-slot key="hero_badge_title" type="title" max_length=32 -->
+        <b>Today: 8am – 6pm</b>
+        <!-- @content-slot key="hero_badge_body" type="body" max_length=90 -->
+        <span>Walk-ins welcome. Same-day answers on every request.</span>
+      </div>
+    </div>
   </div>
 </section>
 
+<div class="band trust">
+  <div class="bay">
+    <!-- @content-slot key="trust_label" type="title" max_length=24 -->
+    <span class="trust-label">Trusted by</span>
+    <div class="trust-marks">
+      <!-- @content-slot key="trust_1" type="title" max_length=24 -->
+      <span>NORTHSIDE CO-OP</span>
+      <!-- @content-slot key="trust_2" type="title" max_length=24 -->
+      <span>HARBOR &amp; LANE</span>
+      <!-- @content-slot key="trust_3" type="title" max_length=24 -->
+      <span>MERIDIAN GROUP</span>
+      <!-- @content-slot key="trust_4" type="title" max_length=24 -->
+      <span>FIELD NOTES</span>
+    </div>
+  </div>
+</div>
+
 <section id="about">
   <div class="bay">
-    <h2>About</h2>
-    <!-- @content-slot key="about_paragraph" type="body" max_length=600 -->
-    <p class="about-paragraph">This paragraph is where a real business would describe itself -- what it does, who it's for, and why it's different. Replace this whole paragraph with real copy through a Site Customization Package.</p>
+    <!-- @content-slot key="about_image" type="image" width=900 height=1120 -->
+    <div class="frame about-image"><span class="mono tag">about_image — 900×1120</span></div>
+    <div>
+      <div class="eyebrow">About</div>
+      <!-- @content-slot key="about_heading" type="title" max_length=60 -->
+      <h2>Built by people who answer the phone themselves</h2>
+      <!-- @content-slot key="about_paragraph" type="body" max_length=600 -->
+      <p class="about-paragraph">This paragraph is where a real business would describe itself — what it does, who it's for, and why it's different. Replace this whole paragraph with real copy through a Site Customization Package.</p>
+      <div class="points">
+        <div><i>✓</i>
+          <!-- @content-slot key="about_point_1" type="body" max_length=70 -->
+          <span>One point of contact from first call to finished work</span>
+        </div>
+        <div><i>✓</i>
+          <!-- @content-slot key="about_point_2" type="body" max_length=70 -->
+          <span>Clear pricing quoted before anything starts</span>
+        </div>
+        <div><i>✓</i>
+          <!-- @content-slot key="about_point_3" type="body" max_length=70 -->
+          <span>Local, licensed, and here next year too</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services" class="band">
+  <div class="bay">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">What we do</div>
+        <!-- @content-slot key="services_heading" type="title" max_length=60 -->
+        <h2>Three ways to work with us</h2>
+      </div>
+      <a class="link-arrow" href="#contact">Ask about a custom scope →</a>
+    </div>
+    <div class="cards-3">
+      <div class="card">
+        <div class="card-icon"></div>
+        <!-- @content-slot key="service_1_title" type="title" max_length=34 -->
+        <h3>Service one</h3>
+        <!-- @content-slot key="service_1_body" type="body" max_length=180 -->
+        <p>A short, concrete description of the first thing this business sells, in the customer's own words.</p>
+        <!-- @content-slot key="service_1_meta" type="title" max_length=24 -->
+        <div class="card-meta">From $—</div>
+      </div>
+      <div class="card">
+        <div class="card-icon"></div>
+        <!-- @content-slot key="service_2_title" type="title" max_length=34 -->
+        <h3>Service two</h3>
+        <!-- @content-slot key="service_2_body" type="body" max_length=180 -->
+        <p>The second offering. Two sentences is plenty — detail belongs on the page it links to.</p>
+        <!-- @content-slot key="service_2_meta" type="title" max_length=24 -->
+        <div class="card-meta">From $—</div>
+      </div>
+      <div class="card">
+        <div class="card-icon"></div>
+        <!-- @content-slot key="service_3_title" type="title" max_length=34 -->
+        <h3>Service three</h3>
+        <!-- @content-slot key="service_3_body" type="body" max_length=180 -->
+        <p>The third offering, usually the premium or recurring one that keeps people coming back.</p>
+        <!-- @content-slot key="service_3_meta" type="title" max_length=24 -->
+        <div class="card-meta">From $—</div>
+      </div>
+    </div>
   </div>
 </section>
 
 <section id="features">
   <div class="bay">
-    <h2>See It In Action</h2>
     <!-- @content-slot key="feature_video" type="video" max_seconds=60 -->
-    <video class="feature-video" controls></video>
+    <div class="frame video-frame"><span class="play"><b>▶</b><span class="mono">feature_video — max 60s</span></span></div>
+    <div>
+      <div class="eyebrow">See it in action</div>
+      <!-- @content-slot key="video_heading" type="title" max_length=60 -->
+      <h2>Sixty seconds inside the shop</h2>
+      <!-- @content-slot key="video_body" type="body" max_length=220 -->
+      <p class="lede">One short video does more than a page of copy. Drop it in and the section fills itself — no layout to rebuild.</p>
+      <div class="steps">
+        <div><strong>01</strong>Meet the people doing the work</div>
+        <div><strong>02</strong>Walk through the space</div>
+        <div><strong>03</strong>Hear what a first visit is like</div>
+      </div>
+    </div>
   </div>
 </section>
 
-<footer>
+<section class="band quotes">
   <div class="bay">
-    &copy; 2026 Test Site. Built to demonstrate the Easy Life Content Installer standard.
+    <!-- @content-slot key="testimonials_heading" type="title" max_length=50 -->
+    <h2>What people say afterward</h2>
+    <div class="cards-3">
+      <figure class="quote">
+        <div class="stars">★★★★★</div>
+        <!-- @content-slot key="quote_1" type="body" max_length=220 -->
+        <blockquote>“They quoted a price, kept it, and finished a day early. I have already sent two neighbors their way.”</blockquote>
+        <!-- @content-slot key="quote_1_by" type="title" max_length=40 -->
+        <figcaption>Dana R. — regular since 2021</figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="stars">★★★★★</div>
+        <!-- @content-slot key="quote_2" type="body" max_length=220 -->
+        <blockquote>“Every question got a straight answer the same day. That is rarer than it should be.”</blockquote>
+        <!-- @content-slot key="quote_2_by" type="title" max_length=40 -->
+        <figcaption>Marcus O. — first-time client</figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="stars">★★★★★</div>
+        <!-- @content-slot key="quote_3" type="body" max_length=220 -->
+        <blockquote>“Small enough to know my name, organized enough to never drop a detail.”</blockquote>
+        <!-- @content-slot key="quote_3_by" type="title" max_length=40 -->
+        <figcaption>Priya S. — three years running</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="bay">
+    <div class="pricing-head">
+      <div class="eyebrow">Pricing</div>
+      <!-- @content-slot key="pricing_heading" type="title" max_length=60 -->
+      <h2>Plain numbers, no packages to decode</h2>
+      <!-- @content-slot key="pricing_sub" type="body" max_length=180 -->
+      <p>Every tier includes the same people and the same care. Pick the amount of time you need.</p>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <!-- @content-slot key="tier_1_name" type="title" max_length=20 -->
+        <div class="tier-name">Drop in</div>
+        <div class="tier-price">
+          <!-- @content-slot key="tier_1_price" type="title" max_length=10 -->
+          <b>$28</b>
+          <!-- @content-slot key="tier_1_unit" type="title" max_length=14 -->
+          <span>/ visit</span>
+        </div>
+        <div class="tier-lines">
+          <!-- @content-slot key="tier_1_line_1" type="body" max_length=48 -->
+          <div>No commitment</div>
+          <!-- @content-slot key="tier_1_line_2" type="body" max_length=48 -->
+          <div>Book same day</div>
+          <!-- @content-slot key="tier_1_line_3" type="body" max_length=48 -->
+          <div>Everything included</div>
+        </div>
+        <a class="btn btn-ghost" href="#contact">Choose</a>
+      </div>
+      <div class="tier is-featured">
+        <span class="tier-badge">Most chosen</span>
+        <!-- @content-slot key="tier_2_name" type="title" max_length=20 -->
+        <div class="tier-name">Monthly</div>
+        <div class="tier-price">
+          <!-- @content-slot key="tier_2_price" type="title" max_length=10 -->
+          <b>$149</b>
+          <!-- @content-slot key="tier_2_unit" type="title" max_length=14 -->
+          <span>/ month</span>
+        </div>
+        <div class="tier-lines">
+          <!-- @content-slot key="tier_2_line_1" type="body" max_length=48 -->
+          <div>Unlimited standard visits</div>
+          <!-- @content-slot key="tier_2_line_2" type="body" max_length=48 -->
+          <div>Priority scheduling</div>
+          <!-- @content-slot key="tier_2_line_3" type="body" max_length=48 -->
+          <div>Cancel any month</div>
+        </div>
+        <a class="btn btn-primary" href="#contact">Choose</a>
+      </div>
+      <div class="tier">
+        <!-- @content-slot key="tier_3_name" type="title" max_length=20 -->
+        <div class="tier-name">Dedicated</div>
+        <div class="tier-price">
+          <!-- @content-slot key="tier_3_price" type="title" max_length=10 -->
+          <b>$390</b>
+          <!-- @content-slot key="tier_3_unit" type="title" max_length=14 -->
+          <span>/ month</span>
+        </div>
+        <div class="tier-lines">
+          <!-- @content-slot key="tier_3_line_1" type="body" max_length=48 -->
+          <div>One named lead on your account</div>
+          <!-- @content-slot key="tier_3_line_2" type="body" max_length=48 -->
+          <div>Custom scope and timeline</div>
+          <!-- @content-slot key="tier_3_line_3" type="body" max_length=48 -->
+          <div>Quarterly review</div>
+        </div>
+        <a class="btn btn-ghost" href="#contact">Choose</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="bay">
+    <div>
+      <!-- @content-slot key="contact_heading" type="title" max_length=60 -->
+      <h2>Come by, or send one sentence</h2>
+      <!-- @content-slot key="contact_body" type="body" max_length=220 -->
+      <p class="lede">Tell us what you need in a line and we will tell you what it costs and when we can do it.</p>
+      <div class="contact-rows">
+        <div><b>Visit</b>
+          <!-- @content-slot key="contact_address" type="body" max_length=90 -->
+          <span>118 Marlow Street, Suite 2 — open Mon to Sat</span>
+        </div>
+        <div><b>Call</b>
+          <!-- @content-slot key="contact_phone" type="title" max_length=24 -->
+          <span>(555) 014-2280</span>
+        </div>
+        <div><b>Email</b>
+          <!-- @content-slot key="contact_email" type="title" max_length=48 -->
+          <span>hello@example.com</span>
+        </div>
+      </div>
+    </div>
+    <form class="enquiry" novalidate>
+      <label>Name<input type="text" name="name" placeholder="Your name"></label>
+      <label>Email<input type="email" name="email" placeholder="you@email.com"></label>
+      <label>What do you need?<textarea name="message" rows="3" placeholder="One sentence is enough."></textarea></label>
+      <button type="submit">Send it</button>
+      <span class="fine">Replies within one business day.</span>
+    </form>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <div class="foot-cols">
+    <div>
+      <div class="foot-brand">
+        <span class="brand-mark">TS</span>
+        <!-- @content-slot key="footer_brand" type="title" max_length=28 -->
+        <span class="brand-name">Test Site</span>
+      </div>
+      <!-- @content-slot key="footer_blurb" type="body" max_length=180 -->
+      <p>A single-page site layer that any Site Customization Package and theme can fill without touching layout.</p>
+    </div>
+    <div class="foot-col">
+      <div class="foot-title">Site</div>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-title">Visit</div>
+      <!-- @content-slot key="footer_hours_1" type="title" max_length=34 -->
+      <span>Mon – Fri, 8am – 6pm</span>
+      <!-- @content-slot key="footer_hours_2" type="title" max_length=34 -->
+      <span>Sat, 9am – 2pm</span>
+      <!-- @content-slot key="footer_hours_3" type="title" max_length=34 -->
+      <span>Closed Sunday</span>
+    </div>
+    <div class="foot-col">
+      <div class="foot-title">Reach us</div>
+      <!-- @content-slot key="footer_phone" type="title" max_length=24 -->
+      <span>(555) 014-2280</span>
+      <!-- @content-slot key="footer_email" type="title" max_length=48 -->
+      <span>hello@example.com</span>
+    </div>
+  </div>
+  <div class="foot-legal">
+    <span>&copy; 2026 <!-- @content-slot key="footer_copyright_name" type="title" max_length=28 --><span>Test Site</span>. Built to demonstrate the Easy Life Content Installer standard.</span>
+    <span class="mono">easy-life site layer v2</span>
   </div>
 </footer>
 
+<script>
+(function () {
+  var toggle = document.querySelector('.nav-toggle');
+  var nav = document.getElementById('site-nav');
+  toggle.addEventListener('click', function () {
+    var open = nav.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+  nav.addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') { nav.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); }
+  });
+
+  var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+  function spy() {
+    var current = null;
+    links.forEach(function (a) {
+      var el = document.querySelector(a.getAttribute('href'));
+      if (el && el.getBoundingClientRect().top <= 140) current = a;
+    });
+    links.forEach(function (a) { a.classList.toggle('is-active', a === current); });
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  spy();
+
+  var form = document.querySelector('form.enquiry');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    form.querySelector('button').textContent = "Thanks — we'll be in touch";
+  });
+})();
+</script>
 </body>
 </html>
