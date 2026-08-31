@@ -38,15 +38,38 @@ p { text-wrap: pretty; }
 .site-nav { margin-left: auto; display: flex; align-items: center; gap: 28px; }
 .site-nav a { font-size: 14.5px; font-weight: 500; color: var(--muted); padding: 6px 0; border-bottom: 2px solid transparent; }
 .site-nav a:hover { color: var(--text); }
-/* Step 814/815: .site-nav a's own color/padding (a class + an element, 2
-   selector components) beat .btn-primary/.btn-sm's own (1 class, 1
-   component) no matter what those said -- the nav CTA rendered in
-   --muted gray with zero side padding regardless of what Step 813 set
-   on .btn-primary/.btn-sm directly. Real specificity fights, not wrong
-   values -- the same real bug in two different properties. */
-.site-nav .btn-primary { color: #fff; padding-left: 5px; padding-right: 5px; }
-.site-nav .btn-primary:hover { background: #fff; border-color: var(--border); color: var(--text); }
-.site-nav a.is-active { background: var(--accent); color: #fff; padding: 6px 16px; border-radius: 999px; border-bottom-color: transparent; }
+/* Step 814/815/816: .site-nav a's own color/padding (a class + an
+   element, 2 selector components) beat .btn-primary/.btn-sm's own (1
+   class, 1 component) no matter what those said -- the nav CTA rendered
+   in --muted gray with zero side padding regardless of what Step 813
+   set directly. Real specificity fights, not wrong values.
+
+   Step 816: "Book a visit" and a scroll-spy-active plain link (About,
+   Services, ...) now share one real rule, on direct instruction ("make
+   sure this is the active button state for the menu items"). This also
+   covers a real edge case for free: nav_cta's own href is #contact, the
+   same section a plain "Contact" link would spy to, so nav_cta can
+   itself pick up .is-active from the scroll-spy script while it's
+   already carrying .btn-primary -- one shared rule means that never
+   produces two different, conflicting sets of values on the same
+   element. Text is #fff, hardcoded rather than var(--card), so it
+   reads correctly under every theme (var(--card) turns dark under
+   midnight) -- the same fix Step 812/813 already made elsewhere. */
+.site-nav a.is-active,
+.site-nav .btn-primary {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  padding: 6px 7px;
+  border-radius: 999px;
+  border-bottom-color: transparent;
+}
+.site-nav a.is-active:hover,
+.site-nav .btn-primary:hover {
+  background: #fff;
+  border-color: var(--border);
+  color: var(--text);
+}
 .nav-toggle { display: none; margin-left: auto; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 9px; font: inherit; font-size: 14px; padding: 9px 14px; cursor: pointer; }
 
 /* buttons */
@@ -55,7 +78,12 @@ p { text-wrap: pretty; }
 .btn-primary:hover { color: #fff; filter: brightness(1.08); }
 .btn-ghost { background: var(--card); color: var(--text); border-color: var(--border); }
 .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
-.btn-sm { font-size: 14.5px; font-weight: 600; padding: 10px 24px; }
+/* font-weight/padding here are academic for the one real .btn-sm element
+   (nav_cta) -- the more specific .site-nav a.is-active, .site-nav
+   .btn-primary rule above always wins for it. Left real and consistent
+   anyway, not stale, in case a second .btn-sm element is ever added
+   outside the nav. */
+.btn-sm { font-size: 14.5px; font-weight: 700; padding: 6px 7px; }
 
 /* media frames -- a clean 1px border matching the corners always, plus a
    real placeholder look (diagonal lines, a real width x height label)
